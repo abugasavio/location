@@ -1,0 +1,78 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<script type="text/javascript" src="jsr_class.js"></script>
+<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCkVhZOWuS77E3vY-stc3FeuhKoCA6Pe8I" type="text/javascript"></script>
+
+</head>
+<body>
+<div id="map" style="width: 500px; height: 400px"></div>
+<script type="text/javascript">
+ 
+ var mapProp = {
+    center: new google.maps.LatLng(51.5,-0.1),
+    zoom: 5,
+    mapTypeId:google.maps.MapTypeId.ROADMAP
+ }
+ var map = new google.maps.Map(document.getElementById("map"), mapProp);
+</script>
+
+
+
+<script>
+
+// this function will be called by our JSON callback
+// the parameter jData will contain an array with geonames objects
+function getLocation(jData) {
+  if (jData == null) {
+    // There was a problem parsing search results
+    return;
+  }
+  alert(jData);
+
+  var html = '';
+  var geonames = jData.geonames;
+  for (i=0;i< geonames.length;i++) {
+     var name = geonames[i];
+     // we create a simple html list with the geonames objects
+     // the link will call the center() javascript method with lat/lng as parameter
+     html = html + '<a href="javascript:center(' + name.lat +',' + name.lng + ');">' + name.name + '</a><br>';
+  }
+  document.getElementById('resultDiv').innerHTML = html;
+}
+
+// centers the google map on the lat/lng
+function center(lat,lng){
+  //var point = new google.maps.LatLng();
+  map.setCenter({lat:lat, lng:lng});
+}
+
+// calls the geonames JSON webservice with the search term
+function search() {
+  request = 'http://ws.geonames.org/searchJSON?q=' +  encodeURIComponent(document.getElementById('q').value)  + '&maxRows=10&callback=getLocation&username=savioabuga';
+
+  // Create a new script object
+  // (implementation of this class is in /export/jsr_class.js)
+  aObj = new JSONscriptRequest(request);
+  // Build the script tag
+  aObj.buildScriptTag();
+  // Execute (add) the script tag
+  aObj.addScriptTag();
+}
+    	
+
+</script>
+
+
+
+
+<form id="searchForm" onsubmit="search(); return false;" style="display:inline">
+  <input id="q" type=text name=q>
+  <input type=submit value=search>
+</form>
+<small><a href="http://www.geonames.org">powered by geonames</a>
+
+<div id="resultDiv">Enter a place name in the search box and press the search button. You will then get a list of matching place names. Then you click on one of the place names and the map above will display the chosen place.</div>
+</body>
+</html>
