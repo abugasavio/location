@@ -1,13 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Geoname Field</title>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<script type="text/javascript" src="jsr_class.js"></script>
-<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCkVhZOWuS77E3vY-stc3FeuhKoCA6Pe8I" type="text/javascript"></script>
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="jsr_class.js"></script>
+    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCkVhZOWuS77E3vY-stc3FeuhKoCA6Pe8I" type="text/javascript"></script>
 
-</head>
-<body>
-<div id="map" style="width: 500px; height: 400px"></div>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+      <div class="container">
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Location</a>
+          </div>
+        </div><!--/.container-fluid -->
+      </nav> 
+  <div id="resultDiv">Enter a place name in the search box and press the search button. You will then get a list of matching place names. Then you click on one of the place names and the map above will display the chosen place.</div>   
+  <form id="searchForm" onsubmit="search(); return false;" class="form-inline">
+  <input id="q" type=text name=q>
+  <button type="submit" value="search" class="btn btn-primary">Search</button>
+</form>
+<!--
+<small><a href="http://www.geonames.org">powered by geonames</a>
+-->
+
+    <div id="map" style="width: 600px; height: 400px"></div>
+
+</div> <!-- /container -->
 <script type="text/javascript">
  
  var mapProp = {
@@ -29,7 +67,6 @@ function getLocation(jData) {
     // There was a problem parsing search results
     return;
   }
-  alert(jData);
 
   var html = '';
   var geonames = jData.geonames;
@@ -46,6 +83,7 @@ function getLocation(jData) {
 function center(lat,lng){
   //var point = new google.maps.LatLng();
   map.setCenter({lat:lat, lng:lng});
+
 }
 
 // calls the geonames JSON webservice with the search term
@@ -60,19 +98,19 @@ function search() {
   // Execute (add) the script tag
   aObj.addScriptTag();
 }
-    	
+      
 
 </script>
 
 
 
 
-<form id="searchForm" onsubmit="search(); return false;" style="display:inline">
-  <input id="q" type=text name=q>
-  <input type=submit value=search>
-</form>
-<small><a href="http://www.geonames.org">powered by geonames</a>
 
-<div id="resultDiv">Enter a place name in the search box and press the search button. You will then get a list of matching place names. Then you click on one of the place names and the map above will display the chosen place.</div>
-</body>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+  </body>
 </html>
