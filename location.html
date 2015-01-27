@@ -36,7 +36,10 @@
       </nav> 
   <div id="resultDiv">Enter a place name in the search box and press the search button. You will then get a list of matching place names. Then you click on one of the place names and the map above will display the chosen place.</div>   
   <form id="searchForm" onsubmit="search(); return false;" class="form-inline">
-  <input id="q" type=text name=q>
+  <div class="form-group">
+    <label class="sr-only" for="query">Location</label>
+    <input type="text" class="form-control" placeholder="Location" name="q" id="q">
+  </div>
   <button type="submit" value="search" class="btn btn-primary">Search</button>
 </form>
 <!--
