@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">    
+    <head>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="dist/css/select2.css" rel="stylesheet"/>
+    <style type="text/css">
+        .icon-flag { background-position: -395px -60px; width: 24px; height: 24px  } 
+        .bigdrop.select2-container .select2-results {max-height: 300px;}
+        .bigdrop .select2-results {max-height: 300px;}
+    </style>
+    <script src="dist/js/select2.js"></script>
+    <script>
+   function repoFormatResult(repo) {
+      var markup = '<div class="row-fluid">' +
+         '<div class="span2"><img src="' + repo.owner.avatar_url + '" /></div>' +
+         '<div class="span10">' +
+            '<div class="row-fluid">' +
+               '<div class="span6">' + repo.full_name + '</div>' +
+               '<div class="span3"><i class="fa fa-code-fork"></i> ' + repo.forks_count + '</div>' +
+               '<div class="span3"><i class="fa fa-star"></i> ' + repo.stargazers_count + '</div>' +
+            '</div>';
+
+      if (repo.description) {
+         markup += '<div>' + repo.description + '</div>';
+      }
+
+      markup += '</div></div>';
+
+      return markup;
+   }
+
+   function repoFormatSelection(repo) {
+      return repo.full_name;
+   }
+</script>
+ <script>
+   function geonamesFormatResult(geoname) {
+      var markup = '<div class="clearfix">' +
+                '<div class="col-sm-1"><img src="http://www.geonames.org/flags/x/' + geoname.countryCode.toLowerCase() + '.gif" class="icon-flag" style="max-width: 100%"/></div>' +   
+                '<div class="col-sm-10"><i class=""></i> ' + geoname.toponymName + ', ' + geoname.countryName  + '</div>' +
+            '</div>';
+      markup += '</div></div>';
+
+      return markup;
+   }
+
+   function  geonamesFormatSelection(geoname) {
+      return  geoname.toponymName + ', ' + geoname.countryName + ', ' + geoname.geonameId;
+   }
+</script>
+    <script>
+    $(document).ready(function() {
+
+    $("#e1").select2({
+            placeholder: "Search location",
+            minimumInputLength: 1,
+            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                url: "http://ws.geonames.org/searchJSON",
+                dataType: 'json',
+                quietMillis: 250,
+                data: function (term, page) {
+                return {
+                    q: term, // search term
+                    username: 'savioabuga',
+                    maxRows: 10,
+                };
+                },
+                results: function (data, page) { // parse the results into the format expected by Select2.
+                // since we are using custom formatting functions we do not need to alter the remote JSON data
+                return { results: data.geonames };
+                },
+                cache: true
+            },
+
+            id: function(obj) {
+              return obj.geonameId; // use slug field for id
+           },
+
+            initSelection: function(element, callback) {
+                
+            // the input tag has a value attribute preloaded that points to a preselected repository's id
+            // this function resolves that id attribute to an object that select2 can render
+            // using its formatResult renderer - that way the repository name is shown preselected
+
+
+
+            var id = $(element).val();
+            if (id !== "") {
+            $.ajax("http://ws.geonames.org/searchJSON/" + id, {
+            dataType: "json"
+            }).done(function(data) { callback(data); });
+            }
+            },
+            formatResult: geonamesFormatResult, // omitted for brevity, see the source of this page
+            formatSelection: geonamesFormatSelection, // omitted for brevity, see the source of this page
+            dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+            escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+            }); 
+
+});
+    </script>
+    </head>
+    <body>
+    <input type="hidden" class="bigdrop" id="e1" style="width:100%;height:auto">
+    <script src="js/bootstrap.min.js"></script>  
+     </body>
+</html>
