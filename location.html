@@ -1,119 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Geoname Field</title>
-
-    <!-- Bootstrap -->
-    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" src="jsr_class.js"></script>
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCkVhZOWuS77E3vY-stc3FeuhKoCA6Pe8I" type="text/javascript"></script>
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-      <div class="container">
-      <!-- Static navbar -->
-      <nav class="navbar navbar-default">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Location</a>
-          </div>
-        </div><!--/.container-fluid -->
-      </nav> 
-  <div id="resultDiv">Enter a place name in the search box and press the search button. You will then get a list of matching place names. Then you click on one of the place names and the map above will display the chosen place.</div>   
-  <form id="searchForm" onsubmit="search(); return false;" class="form-inline">
-  <div class="form-group">
-    <label class="sr-only" for="query">Location</label>
-    <input type="text" class="form-control" placeholder="Location" name="q" id="q">
-  </div>
-  <button type="submit" value="search" class="btn btn-primary">Search</button>
-</form>
-<!--
-<small><a href="http://www.geonames.org">powered by geonames</a>
--->
-
-    <div id="map" style="width: 600px; height: 400px"></div>
-
-</div> <!-- /container -->
-<script type="text/javascript">
- 
- var mapProp = {
-    center: new google.maps.LatLng(51.5,-0.1),
-    zoom: 5,
-    mapTypeId:google.maps.MapTypeId.ROADMAP
- }
- var map = new google.maps.Map(document.getElementById("map"), mapProp);
-</script>
-
-
-
-<script>
-
-// this function will be called by our JSON callback
-// the parameter jData will contain an array with geonames objects
-function getLocation(jData) {
-  if (jData == null) {
-    // There was a problem parsing search results
-    return;
-  }
-
-  var html = '';
-  var geonames = jData.geonames;
-  for (i=0;i< geonames.length;i++) {
-     var name = geonames[i];
-     // we create a simple html list with the geonames objects
-     // the link will call the center() javascript method with lat/lng as parameter
-     html = html + '<a href="javascript:center(' + name.lat +',' + name.lng + ');">' + name.name + '</a><br>';
-  }
-  document.getElementById('resultDiv').innerHTML = html;
-}
-
-// centers the google map on the lat/lng
-function center(lat,lng){
-  //var point = new google.maps.LatLng();
-  map.setCenter({lat:lat, lng:lng});
-
-}
-
-// calls the geonames JSON webservice with the search term
-function search() {
-  request = 'http://ws.geonames.org/searchJSON?q=' +  encodeURIComponent(document.getElementById('q').value)  + '&maxRows=10&callback=getLocation&username=savioabuga';
-
-  // Create a new script object
-  // (implementation of this class is in /export/jsr_class.js)
-  aObj = new JSONscriptRequest(request);
-  // Build the script tag
-  aObj.buildScriptTag();
-  // Execute (add) the script tag
-  aObj.addScriptTag();
-}
-      
-
-</script>
-
-
-
-
-
-
-
+<html lang="en">    
+    <head>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
-  </body>
+    <!-- Bootstrap -->
+    <link href="dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="dist/css/select2.css" rel="stylesheet"/>
+    <style type="text/css">
+        .icon-flag { background-position: -395px -60px; width: 24px; height: 24px  } 
+        .bigdrop.select2-container .select2-results {max-height: 300px;}
+        .bigdrop .select2-results {max-height: 300px;}
+    </style>
+    <script src="dist/js/select2.js"></script>
+    <script>
+   function repoFormatResult(repo) {
+      var markup = '<div class="row-fluid">' +
+         '<div class="span2"><img src="' + repo.owner.avatar_url + '" /></div>' +
+         '<div class="span10">' +
+            '<div class="row-fluid">' +
+               '<div class="span6">' + repo.full_name + '</div>' +
+               '<div class="span3"><i class="fa fa-code-fork"></i> ' + repo.forks_count + '</div>' +
+               '<div class="span3"><i class="fa fa-star"></i> ' + repo.stargazers_count + '</div>' +
+            '</div>';
+
+      if (repo.description) {
+         markup += '<div>' + repo.description + '</div>';
+      }
+
+      markup += '</div></div>';
+
+      return markup;
+   }
+
+   function repoFormatSelection(repo) {
+      return repo.full_name;
+   }
+</script>
+ <script>
+   function geonamesFormatResult(geoname) {
+      var markup = '<div class="clearfix">' +
+                '<div class="col-sm-1"><img src="http://www.geonames.org/flags/x/' + geoname.countryCode.toLowerCase() + '.gif" class="icon-flag" style="max-width: 100%"/></div>' +   
+                '<div class="col-sm-10"><i class=""></i> ' + geoname.toponymName + ', ' + geoname.countryName  + '</div>' +
+            '</div>';
+      markup += '</div></div>';
+
+      return markup;
+   }
+
+   function  geonamesFormatSelection(geoname) {
+      return  geoname.toponymName + ', ' + geoname.countryName + ', ' + geoname.geonameId;
+   }
+</script>
+    <script>
+    $(document).ready(function() {
+
+    $("#e1").select2({
+            placeholder: "Search location",
+            minimumInputLength: 1,
+            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                url: "http://ws.geonames.org/searchJSON",
+                dataType: 'json',
+                quietMillis: 250,
+                data: function (term, page) {
+                return {
+                    q: term, // search term
+                    username: 'savioabuga',
+                    maxRows: 10,
+                };
+                },
+                results: function (data, page) { // parse the results into the format expected by Select2.
+                // since we are using custom formatting functions we do not need to alter the remote JSON data
+                return { results: data.geonames };
+                },
+                cache: true
+            },
+
+            id: function(obj) {
+              return obj.geonameId; // use slug field for id
+           },
+
+            initSelection: function(element, callback) {
+                
+            // the input tag has a value attribute preloaded that points to a preselected repository's id
+            // this function resolves that id attribute to an object that select2 can render
+            // using its formatResult renderer - that way the repository name is shown preselected
+
+
+
+            var id = $(element).val();
+            if (id !== "") {
+            $.ajax("http://ws.geonames.org/searchJSON/" + id, {
+            dataType: "json"
+            }).done(function(data) { callback(data); });
+            }
+            },
+            formatResult: geonamesFormatResult, // omitted for brevity, see the source of this page
+            formatSelection: geonamesFormatSelection, // omitted for brevity, see the source of this page
+            dropdownCssClass: "bigdrop", // apply css that makes the dropdown taller
+            escapeMarkup: function (m) { return m; } // we do not want to escape markup since we are displaying html in results
+            }); 
+
+});
+    </script>
+    </head>
+    <body>
+    <input type="hidden" class="bigdrop" id="e1" style="width:100%;height:auto">
+    <script src="js/bootstrap.min.js"></script>  
+     </body>
 </html>
